@@ -1,2 +1,4 @@
 # LPCSB
 LPCSB = Low Power Color Sensing Board
+
+The LPCSB is designed to measure the ambient light in the surrounding area by means of a TCS34725 Color Sensor.  The sensor uses four analog-to-digital converters (ADCs) to read four photodiodes (one photodiode per ADC).  The photodiodes are red-filtered, green-filtered, blue-filtered, and clear (no filter).  The photodiodes are also covered with an IR-blocking filter.  The code in this repository is responsible for initializing all of the hardware on the LPCSB, configuring the settings of the color sensor (integration time, gain, enabling the internal oscillator, enabling the ADCs, and setting a hardware interrupt in the sensor), reading and saving the values taken by the four ADCs mentioned previously, and then calculating the the temperature of each color (how much of each is in the sample taken), as well as the lux (intensity per square meter) of said sample.  
