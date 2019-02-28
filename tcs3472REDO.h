@@ -18,8 +18,8 @@ void tcs34725_read_green(void (*callback)(int16_t colorGreen));
 void tcs34725_read_blue(void (*callback)(int16_t colorBlue));
 void tcs34725_read_clear(void(*callback)(int16_t colorClear));
 
-float tcs34725_calculate_color_temperature();
-float tcs34725_calculate_lux();
+uint16_t tcs34725_calculate_color_temperature();
+uint16_t tcs34725_calculate_lux();
 
 void tcs34725_event_handler ();
 

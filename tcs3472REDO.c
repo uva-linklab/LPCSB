@@ -5,7 +5,6 @@
 #include <math.h>
 
 #include "tcs3472REDO.h"
-#include "simple_ble.h"
 #include "nrf_delay.h"
 
 #include "app_twi.h"
@@ -13,6 +12,10 @@
 
 #include "led.h"
 
+//Peripherals
+#include "ble_advdata.h"
+#include "simple_ble.h"
+#include "simple_adv.h"
 
 //***Global data***
 #define LED 17
@@ -23,10 +26,10 @@ static app_twi_t* twi;
 // Measurement Storage
 static uint8_t tcsIDval[1] = {0};
 static uint8_t readEnable[1] = {0};
+static uint8_t clear[2] = {0};
 static uint8_t red[2] = {0};
 static uint8_t green[2] = {0};
 static uint8_t blue[2] = {0};
-static uint8_t clear[2] = {0};
 
 /* Read the ID of tcs34725 (When initializing) */
 static uint8_t const READ_ID_CMD[1] = {TCS34725_COMMAND_BIT | TCS34725_ID};
@@ -86,14 +89,7 @@ static app_twi_transfer_t const MEAS_CLEAR_TXFR[MEAS_CLEAR_TXFR_LEN] = {
     APP_TWI_READ(TCS34725_ADDRESS, clear, 2, 0),
 };
 
-//read clear
-// static uint8_t const READ_CLEAR_CMD[1] = {TCS34725_COMMAND_BIT | TCS34725_CDATAL};
-// #define READ_CLEAR_TXFR_LEN 1
-// static app_twi_transfer_t const READ_CLEAR_TXFR[READ_CLEAR_TXFR_LEN] = {
-//     APP_TWI_READ(TCS34725_ADDRESS, READ_CLEAR_CMD, 1, 0),
-// };
-
-// measure red
+// Measure red
 static uint8_t const MEAS_RED_CMD[1] = {TCS34725_COMMAND_BIT | TCS34725_RDATAL};
 #define MEAS_RED_TXFR_LEN 2
 static app_twi_transfer_t const MEAS_RED_TXFR[MEAS_RED_TXFR_LEN] = {
@@ -101,27 +97,13 @@ static app_twi_transfer_t const MEAS_RED_TXFR[MEAS_RED_TXFR_LEN] = {
     APP_TWI_READ(TCS34725_ADDRESS, red, 2, 0),
 };
 
-// read red
-//NOTE: must be used after a MEAS_RED_TXFR, with a ~7 ms delay
-// #define READ_RED_TXFR_LEN 1
-// static app_twi_transfer_t const READ_RED_TXFR[READ_RED_TXFR_LEN] = {
-//     APP_TWI_READ(TCS34725_ADDRESS, red, 2, 0),
-// };
-
-// measure green
+// Measure green
 static uint8_t const MEAS_GREEN_CMD[1] = {TCS34725_COMMAND_BIT | TCS34725_GDATAL};
 #define MEAS_GREEN_TXFR_LEN 2
 static app_twi_transfer_t const MEAS_GREEN_TXFR[MEAS_GREEN_TXFR_LEN] = {
     APP_TWI_WRITE(TCS34725_ADDRESS, MEAS_GREEN_CMD, 1, 0),
     APP_TWI_READ(TCS34725_ADDRESS, green, 2, 0),
 };
-
-// read green
-//NOTE: must be used after a MEAS_GREEN_TXFR, with a ~7 ms delay
-// #define READ_GREEN_TXFR_LEN 1
-// static app_twi_transfer_t const READ_GREEN_TXFR[READ_GREEN_TXFR_LEN] = {
-//     APP_TWI_READ(TCS34725_ADDRESS, green, 2, 0),
-// };
 
 // measure blue
 static uint8_t const MEAS_BLUE_CMD[1] = {TCS34725_COMMAND_BIT | TCS34725_BDATAL};
@@ -130,13 +112,6 @@ static app_twi_transfer_t const MEAS_BLUE_TXFR[MEAS_BLUE_TXFR_LEN] = {
     APP_TWI_WRITE(TCS34725_ADDRESS, MEAS_BLUE_CMD, 1, 0),
     APP_TWI_READ(TCS34725_ADDRESS, blue, 2, 0),
 };
-
-// // read blue
-// //NOTE: must be used after a MEAS_BLUE_TXFR, with a ~7 ms delay
-// #define READ_BLUE_TXFR_LEN 1
-// static app_twi_transfer_t const READ_BLUE_TXFR[READ_BLUE_TXFR_LEN] = {
-//     APP_TWI_READ(TCS34725_ADDRESS, blue, 2, 0),
-// };
 
 // timer for use by driver
 APP_TIMER_DEF(tcs34725_timer);
@@ -169,16 +144,12 @@ typedef enum {
     SET_INTERRUPT_COMPLETE,
 
     READ_CLEAR_STARTED,
-    // READ_CLEAR_READY,
     READ_CLEAR_COMPLETE,
     READ_RED_STARTED,
-    // READ_RED_READY,
     READ_RED_COMPLETE,
     READ_GREEN_STARTED,
-    // READ_GREEN_READY,
     READ_GREEN_COMPLETE,
     READ_BLUE_STARTED,
-    // READ_BLUE_READY,
     READ_BLUE_COMPLETE,
 } tcs34725_state_t;
 static tcs34725_state_t state = NONE;
@@ -301,8 +272,11 @@ void tcs34725_adc_enable (void (*callback)(void)) {
 }
 
 static void(*set_interrupt_callback)(void) = NULL;
-void tcs34725_set_Interrupt(void (*callback)(void)){
+void tcs34725_set_Interrupt(void (*callback)(void)){  
+    
     set_interrupt_callback = callback;
+    
+    //set next state
     state = SET_INTERRUPT_STARTED;
 
     static app_twi_transaction_t const interruptSet = {
@@ -311,6 +285,17 @@ void tcs34725_set_Interrupt(void (*callback)(void)){
         .callback = tcs34725_event_handler,
         .p_user_data = NULL,
     };
+
+    for(int i = 0; i < 10; i++){
+        led_toggle(LED);                        //Turn off LED
+        nrf_delay_ms(50);
+        led_toggle(LED);
+        nrf_delay_ms(50);
+    }
+    // Advertise because why not
+    simple_adv_only_name();
+    led_on(LED);
+
     app_twi_schedule(twi, &interruptSet);
 }
 
@@ -334,18 +319,6 @@ void tcs34725_read_clear (void (*callback)(int16_t clear)) {
     APP_ERROR_CHECK(err_code);
 }
 
-// //NOTE: expected to be run after a successful MEAS_CLEAR_TXFR transaction
-// void tcs34725_read_clear_data () {
-//     // read data from completed measurement
-//     static app_twi_transaction_t const transaction = {
-//         .p_transfers = READ_CLEAR_TXFR,
-//         .number_of_transfers = READ_CLEAR_TXFR_LEN,
-//         .callback = tcs34725_event_handler,
-//         .p_user_data = NULL,
-//     };
-//     app_twi_schedule(twi, &transaction);
-// }
-
 /*TCS34725 MEASUREMENT AND READ METHODS*/
 static void (*read_red_callback)(int16_t) = NULL;
 void tcs34725_read_red (void (*callback)(int16_t red)) {
@@ -367,18 +340,6 @@ void tcs34725_read_red (void (*callback)(int16_t red)) {
     APP_ERROR_CHECK(err_code);
 }
 
-// //NOTE: expected to be run after a successful MEAS_RED_TXFR transaction
-// void tcs34725_read_red_data () {
-//     // read data from completed measurement
-//     static app_twi_transaction_t const transaction = {
-//         .p_transfers = READ_RED_TXFR,
-//         .number_of_transfers = READ_RED_TXFR_LEN,
-//         .callback = tcs34725_event_handler,
-//         .p_user_data = NULL,
-//     };
-//     app_twi_schedule(twi, &transaction);
-// }
-
 static void (*read_green_callback)(int16_t) = NULL;
 void tcs34725_read_green (void (*callback)(int16_t green)) {
     // store user callback
@@ -398,18 +359,6 @@ void tcs34725_read_green (void (*callback)(int16_t green)) {
     err_code = app_twi_schedule(twi, &transaction);
     APP_ERROR_CHECK(err_code);
 }
-
-//NOTE: expected to be run after a successful MEAS_GREEN_TXFR transaction
-//void tcs34725_read_green_data () {
-    // read data from completed measurement
-//    static app_twi_transaction_t const transaction = {
-//        .p_transfers = READ_GREEN_TXFR,
-//        .number_of_transfers = READ_GREEN_TXFR_LEN,
-//        .callback = tcs34725_event_handler,
-//        .p_user_data = NULL,
-//    };
-//    app_twi_schedule(twi, &transaction);
-//}
 
 static void (*read_blue_callback)(int16_t) = NULL;
 void tcs34725_read_blue (void (*callback)(int16_t blue)) {
@@ -431,20 +380,9 @@ void tcs34725_read_blue (void (*callback)(int16_t blue)) {
     APP_ERROR_CHECK(err_code);
 }
 
-//NOTE: expected to be run after a successful MEAS_BLUE_TXFR transaction
-//void tcs34725_read_blue_data () {
-    // read data from completed measurement
-//    static app_twi_transaction_t const transaction = {
-//        .p_transfers = READ_BLUE_TXFR,
-//        .number_of_transfers = READ_BLUE_TXFR_LEN,
-//        .callback = tcs34725_event_handler,
-//        .p_user_data = NULL,
-//    };
-//    app_twi_schedule(twi, &transaction);
-//}
 
 /* TCS34725 CALCULATION METHODS */
-float tcs34725_calculate_color_temperature() {
+uint16_t tcs34725_calculate_color_temperature() {
     
     float X, Y, Z;      /* RGB to XYZ correlation      */
     float xc, yc;       /* Chromaticity co-ordinates   */
@@ -476,10 +414,12 @@ float tcs34725_calculate_color_temperature() {
   /* Calculate the final CCT */
     cct = (449.0F * (float)(pow(n, 3))) + (3525.0F * (float)(pow(n, 2))) + (6823.3F * n) + 5520.33F;
 
+    cct = (uint16_t)cct;
+
     return cct;
 }
 
-float tcs34725_calculate_lux() {
+uint16_t tcs34725_calculate_lux() {
 
     float illuminance;
 
@@ -487,6 +427,8 @@ float tcs34725_calculate_lux() {
     uint16_t greenValue = (((uint16_t)green[1] << 8) | (uint16_t)green[0]);
     uint16_t blueValue = (((uint16_t)blue[1] << 8) | (uint16_t)blue[0]);
     illuminance = (-0.32466F * redValue) + (1.57837F * greenValue) + (-0.73191F * blueValue);
+
+    illuminance = (uint16_t)illuminance;
 
     return illuminance;
 }
@@ -628,19 +570,11 @@ void tcs34725_event_handler () {
             APP_ERROR_CHECK(err_code);
             break;
 
-        // case READ_CLEAR_READY:
-        //     // set next state
-        //     state = READ_CLEAR_COMPLETE;
-
-        //     // read data from sensor
-        //     tcs34725_read_clear_data();
-        //     break;
-
         case READ_CLEAR_COMPLETE:
             // finished
             state = NONE;
             if (read_clear_callback) {
-                read_clear_callback(clear[0]);
+                read_clear_callback((((uint16_t)clear[1] << 8) | (uint16_t)clear[0]));
             }
             break;
 
@@ -653,20 +587,12 @@ void tcs34725_event_handler () {
             APP_ERROR_CHECK(err_code);
             break;
 
-        // case READ_RED_READY:
-        //     // set next state
-        //     state = READ_RED_COMPLETE;
-
-        //     // read data from sensor
-        //     tcs34725_read_red_data();
-        //     break;
-
         case READ_RED_COMPLETE:
             // finished
             state = NONE;
-            led_toggle(LED);
+            //led_toggle(LED);
             if (read_red_callback) {
-                read_red_callback(red[0]);
+                read_red_callback((((uint16_t)red[1] << 8) | (uint16_t)red[0]));
             }
 
             break;
@@ -680,19 +606,11 @@ void tcs34725_event_handler () {
             APP_ERROR_CHECK(err_code);
             break;
 
-        // case READ_GREEN_READY:
-        //     // set next state
-        //     state = READ_GREEN_COMPLETE;
-
-        //     // read data from sensor
-        //     tcs34725_read_green_data();
-        //     break;
-
         case READ_GREEN_COMPLETE:
             // finished
             state = NONE;
             if (read_green_callback) {
-                read_green_callback(green[0]);
+                read_green_callback((((uint16_t)green[1] << 8) | (uint16_t)green[0]));
             }
             break;
 
@@ -705,19 +623,11 @@ void tcs34725_event_handler () {
             APP_ERROR_CHECK(err_code);
             break;
 
-        // case READ_BLUE_READY:
-        //     // set next state
-        //     state = READ_BLUE_COMPLETE;
-
-        //     // read data from sensor
-        //     tcs34725_read_blue_data();
-        //     break;
-
         case READ_BLUE_COMPLETE:
             // finished
             state = NONE;
             if (read_blue_callback) {
-                read_blue_callback(blue[0]);
+                read_blue_callback((((uint16_t)blue[1] << 8) | (uint16_t)blue[0]));
             }
             break;
 
