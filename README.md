@@ -5,5 +5,6 @@ The LPCSB is designed to measure the ambient light in the surrounding area by me
 
 All required parts to take data from the color sensor have been initialized and tested in this code, except for the BLE radio, which isn't working and is currently being troubleshooted.
 
-Update: Got the BLE radio to work with code from "Squall", am currently working on code that will broadcast the captured color data.
-NOTE:  In the future, make sure that the external crystal oscillator meets the BLE chip requirements for the external clock frequency described in the datasheet. In this case, the required frequency for the external clock is 16 MHz.  For some reason, the clock chips that were being used were 26 MHz clocks instead of 16 MHz, which WILL cause errors with whichever sections of the processor happen to rely on the external signal.
+Update: Am able to have the board read data from the sensor, calculate the color temperature and lux, and then broadcast the data. This is only done once at the moment (had problems with implementing it on a timer earlier).  Next step is to implement two timers: one to run once at the beginning where the sensor will be configured properly and then read/broadcast the data once, and a second timer to run after the first broadcast that will only read/broadcast the data.
+
+NOTE:  Make sure that the external crystal oscillator meets the BLE chip requirements for the external clock frequency described in the nrf51822 datasheet. In this case, the required frequency for the external clock is 16 MHz.  For some reason, the clock chips that were being used early on were 26 MHz clocks instead of 16 MHz, which WILL cause errors with whichever sections of the processor happen to rely on the external signal (in this case, the BLE Radio parts).
