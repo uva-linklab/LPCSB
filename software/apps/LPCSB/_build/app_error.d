@@ -1,0 +1,23 @@
+_build/app_error.o: \
+ /home/alexander/Desktop/Programming_nrf51822_boards/nrf5x-base/make/../sdk/nrf51_sdk_10.0.0/components/libraries/util/app_error.c \
+ /home/alexander/Desktop/Programming_nrf51822_boards/nrf5x-base/make/../sdk/nrf51_sdk_10.0.0/components/device/nrf.h \
+ /home/alexander/Desktop/Programming_nrf51822_boards/nrf5x-base/make/../sdk/nrf51_sdk_10.0.0/components/device/nrf51.h \
+ /home/alexander/Desktop/Programming_nrf51822_boards/nrf5x-base/make/../sdk/nrf51_sdk_10.0.0/components/toolchain/gcc/core_cm0.h \
+ /usr/lib/gcc/arm-none-eabi/7.3.1/include/stdint.h \
+ /usr/arm-none-eabi/include/stdint.h \
+ /usr/arm-none-eabi/include/machine/_default_types.h \
+ /usr/arm-none-eabi/include/sys/features.h \
+ /usr/arm-none-eabi/include/_newlib_version.h \
+ /usr/arm-none-eabi/include/sys/_intsup.h \
+ /usr/arm-none-eabi/include/sys/_stdint.h \
+ /home/alexander/Desktop/Programming_nrf51822_boards/nrf5x-base/make/../sdk/nrf51_sdk_10.0.0/components/toolchain/gcc/core_cmInstr.h \
+ /home/alexander/Desktop/Programming_nrf51822_boards/nrf5x-base/make/../sdk/nrf51_sdk_10.0.0/components/toolchain/gcc/core_cmFunc.h \
+ /home/alexander/Desktop/Programming_nrf51822_boards/nrf5x-base/make/../sdk/nrf51_sdk_10.0.0/components/toolchain/system_nrf51.h \
+ /home/alexander/Desktop/Programming_nrf51822_boards/nrf5x-base/make/../sdk/nrf51_sdk_10.0.0/components/device/nrf51_bitfields.h \
+ /home/alexander/Desktop/Programming_nrf51822_boards/nrf5x-base/make/../sdk/nrf51_sdk_10.0.0/components/device/nrf51_deprecated.h \
+ /home/alexander/Desktop/Programming_nrf51822_boards/nrf5x-base/make/../sdk/nrf51_sdk_10.0.0/components/device/compiler_abstraction.h \
+ /home/alexander/Desktop/Programming_nrf51822_boards/nrf5x-base/make/../sdk/nrf51_sdk_10.0.0/components/libraries/util/app_error.h \
+ /usr/lib/gcc/arm-none-eabi/7.3.1/include/stdbool.h \
+ /home/alexander/Desktop/Programming_nrf51822_boards/nrf5x-base/make/../sdk/nrf51_sdk_10.0.0/components/softdevice/s110/headers/nrf_error.h \
+ /home/alexander/Desktop/Programming_nrf51822_boards/nrf5x-base/make/../sdk/nrf51_sdk_10.0.0/components/device/compiler_abstraction.h \
+ /home/alexander/Desktop/Programming_nrf51822_boards/nrf5x-base/make/../sdk/nrf51_sdk_10.0.0/components/libraries/util/nordic_common.h

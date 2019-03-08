@@ -1,0 +1,5 @@
+r
+loadfile _build/squall_beacon_s110.hex 
+r
+g
+exit
