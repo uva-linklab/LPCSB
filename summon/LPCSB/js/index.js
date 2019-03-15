@@ -75,25 +75,34 @@ var app = {
    onParseAdvData: function(device){
         //Parse Advertised Data
         var advertisement = device.advertisement;
-        app.log('bla bla1');
+        app.log('Testing 1');
         // Check this is something we can parse
         if (advertisement.localName == 'LPCSB' &&
                 advertisement.manufacturerData) { 
             var mandata = advertisement.manufacturerData.slice(4);
-	    app.log('bla bla2');
-	    var roomdata=String.fromCharCode(parseInt(mandata[0]))+String.fromCharCode(parseInt(mandata[1]))+String.fromCharCode(parseInt(mandata[2]))+String.fromCharCode(parseInt(mandata[3]));
-            // Save when we got this.
-            last_update = Date.now();
+	        app.log('Testing 2');
+            var clearData=String.fromCharCode(parseInt(mandata[0]))+String.fromCharCode(parseInt(mandata[1]));
+            var redData = String.fromCharCode(parseInt(mandata[2]))+String.fromCharCode(parseInt(mandata[3]));
+            var greenData = String.fromCharCode(parseInt(mandata[4]))+String.fromCharCode(parseInt(mandata[5]));
+            var blueData = String.fromCharCode(parseInt(mandata[6]))+String.fromCharCode(parseInt(mandata[7]));
+            var colTempData = String.fromCharCode(parseInt(mandata[8]))+String.fromCharCode(parseInt(mandata[9]));
+            var luxData = String.fromCharCode(parseInt(mandata[10]))+String.fromCharCode(parseInt(mandata[11]));
+            
+            last_update = Date.now();   // Save when we got this.
 			
 			//check that it's a data packet
-		app.log(roomdata);
-	        document.getElementById("roomVal").innerHTML =roomdata;
-
+		    app.log(clearData);
+	        document.getElementById("clearVal").innerHTML =clearData;
+            document.getElementById("redVal").innerHTML =redData;
+            document.getElementById("greenVal").innerHTML =greenData;
+            document.getElementById("blueVal").innerHTML =blueData;
+            document.getElementById("colorTempVal").innerHTML =colTempData;
+            document.getElementById("luxVal").innerHTML =luxData;
 
             app.update_time_ago();
 
         } else {
-            // Not a Blink packet...
+            // Not a Color packet...
             app.log('Advertisement was not LPCSB.');
         }
 
