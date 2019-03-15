@@ -10,18 +10,22 @@
         <link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">
         <link rel="stylesheet" href="css/font-awesome-4.4.0/css/font-awesome.min.css">
 
-        <title>LPCSB</title>
+        <link rel="shortcut icon" type="image/x-icon" href="img/herald.png" />
+
+        <title>Herald</title>
     </head>
     <body id="main_view" data-role="main" class="frame" style="text-align:center; font-family:sans-serif-thin;color:#888">
 
         <div data-role="header" data-theme="b">
                 </br>
+                <img src="img/herald.png" style="width:64px;vertical-align:middle;margin-right:4px"/>
                 <text align=center style="font-size: 250%">
-                    <span style="font-weight: bold; color:#0099FE">L</span>
-                    <span style="font-weight: bold; color:#0099DC">P</span>
-                    <span style="font-weight: bold; color:#0099BA">C</span>
-                    <span style="font-weight: bold; color:#009998">S</span>
-                    <span style="font-weight: bold; color:#009976">B</span>
+                    <span style="font-weight: bold; color:#0099FF">H</span>
+                    <span style="font-weight: bold; color:#0099DD">E</span>
+                    <span style="font-weight: bold; color:#0099BB">R</span>
+                    <span style="font-weight: bold; color:#009999">A</span>
+                    <span style="font-weight: bold; color:#009977">L</span>
+                    <span style="font-weight: bold; color:#009977">D</span>
                 </text></br>
                 <h1 style="font-size: 90%;" id="title">deviceId</h1>
 
@@ -34,39 +38,9 @@
         <table border="0" align=center style="width:90%; font-family:'HelveticaNeue-Light', sans-serif-light, Arial, sans-serif; margin-top:10px;">
             <tr>
                 <td align=center class="charTitleCell"><p style="width:90%">Broadcasting from Room Number:</p></td>
-                <td align=center class="charValueCell" id="Room Number">0</td>
-            </tr>
-
-            <tr>
-                <td align=center class="charTitleCell"><p style="width:90%">Sensor ID:</p></td>
-                <td align=center class="charValueCell" id="Sensor ID">0</td>
+                <td align=center class="charValueCell" id="roomVal">0</td>
             </tr>
            
-            <tr>
-                <td align=center class="charTitleCell"><p style="width:90%">Red:</p></td>
-                <td align=center class="charValueCell" id="Sensor ID">0</td>
-            </tr>
-
-            <tr>
-                <td align=center class="charTitleCell"><p style="width:90%">Green:</p></td>
-                <td align=center class="charValueCell" id="Sensor ID">0</td>
-            </tr>
-
-            <tr>
-                <td align=center class="charTitleCell"><p style="width:90%">Blue:</p></td>
-                <td align=center class="charValueCell" id="Sensor ID">0</td>
-            </tr>
-
-            <tr>
-                <td align=center class="charTitleCell"><p style="width:90%">Color Temp:</p></td>
-                <td align=center class="charValueCell" id="Sensor ID">0</td>
-            </tr>
-
-            <tr>
-                <td align=center class="charTitleCell"><p style="width:90%">Lux:</p></td>
-                <td align=center class="charValueCell" id="Sensor ID">0</td>
-            </tr>
-
         </table>
         </br>
 
@@ -77,7 +51,8 @@
        </div>
 
         <div data-role="popup" data-overlay-theme="b" id="about_page">
-            <p>LPCSB: Test Data Recorder</p>
+            <img id="centralblink" alt = "herald_img" src="img/herald.png" name="heraldimg" style="width:50%; margin:5px 0;"/></br>
+            <p>Herald: room number locator</p>
             <p>Find out more at <a href="https://github.com/lab11/blees">https://github.com/lab11/blees</a>.</p>
         </div>
 
