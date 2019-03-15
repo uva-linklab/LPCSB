@@ -1,7 +1,7 @@
 /* JavaScript for Blink Summon UI */
 
 var deviceId = "C0:98:E5:90:00:05";                                         // while testing, replace with address of a BLE peripheral
-var deviceName = "Herald";                                                      // while testing, replace with desired name
+var deviceName = "LPCSB";                                                      // while testing, replace with desired name
 
 var timer;
 
@@ -20,7 +20,7 @@ $(document).on('pageinit',function(){
 var app = {
     // Application Constructor
     initialize: function() {
-        app.log("Herald init");
+        app.log("LPCSB init");
 
         document.addEventListener("deviceready", app.onAppReady, false);
         document.addEventListener("resume", app.onAppReady, false);
@@ -77,7 +77,7 @@ var app = {
         var advertisement = device.advertisement;
         app.log('bla bla1');
         // Check this is something we can parse
-        if (advertisement.localName == 'herald' &&
+        if (advertisement.localName == 'LPCSB' &&
                 advertisement.manufacturerData) { 
             var mandata = advertisement.manufacturerData.slice(4);
 	    app.log('bla bla2');
@@ -94,7 +94,7 @@ var app = {
 
         } else {
             // Not a Blink packet...
-            app.log('Advertisement was not Herald.');
+            app.log('Advertisement was not LPCSB.');
         }
 
     },
