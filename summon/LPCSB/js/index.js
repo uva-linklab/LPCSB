@@ -1,6 +1,6 @@
 /* JavaScript for Blink Summon UI */
 
-var deviceId = "C0:98:E5:90:00:05";                                         // while testing, replace with address of a BLE peripheral
+var deviceId = "C0:98:E5:40:5D:4C";                                         // while testing, replace with address of a BLE peripheral
 var deviceName = "LPCSB";                                                      // while testing, replace with desired name
 
 var timer;
@@ -90,7 +90,7 @@ var app = {
             
             last_update = Date.now();   // Save when we got this.
 			
-			//check that it's a data packet
+		    //check that it's a data packet
 		    app.log(clearData);
 	        document.getElementById("clearVal").innerHTML =clearData;
             document.getElementById("redVal").innerHTML =redData;
