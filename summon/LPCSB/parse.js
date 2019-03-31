@@ -19,7 +19,7 @@ var parse_advertisement = function (advertisement, cb) {
                         var sensorID = LPCSB.readUInt8(0);
 
                         //Want Little Endian (I think, need to double check this)
-                        var clear=LPCSB.readUintLE(1,2);    //Clear Data
+                        var clear=LPCSB.readUIntLE(1,2);    //Clear Data
 			            var red=LPCSB.readUIntLE(3,2);      //Red Data
 			            var green=LPCSB.readUIntLE(5,2);    //Green Data
                         var blue=LPCSB.readUIntLE(7,2);     //Blue Data
