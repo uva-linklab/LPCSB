@@ -53,11 +53,12 @@ APP_TIMER_DEF(color_timer);
 /************************/
 /***** Sensor Stuff *****/
 /************************/
-#define SENSOR_DATA_SIZE 14
 
 //Can only transmit bytes, not ints
 static struct {
     uint8_t sensorID;
+    uint8_t packetNumL; //Packet number MSB
+    uint8_t packetNumR; //Packet number LSB
     uint8_t clearTempL; //Leftmost byte
     uint8_t clearTempR; //Rightmost byte
     uint8_t redTempL;   //Leftmost byte
@@ -84,7 +85,7 @@ static struct{
 /********** BLE Advertising **********/
 /*************************************/
 #define BLE_ADVERTISING_ENABLED 1
-#define DEVICE_NAME            "LPCSB"
+#define DEVICE_NAME            "LPCSB_1"
 #define COLOR_DATA_URL         "j2x.us/LPCSB"
 #define UVA_COMPANY_IDENTIFIER 0x02E0
 #define UVA_COLOR_SERVICE      0x31
@@ -126,6 +127,18 @@ static void start_color_measuring(){
 }
 
 static void advertiseData(){
+
+    //Increment packet numbers in hex
+    if(color_sensor_info.packetNumR >= 255){
+        color_sensor_info.packetNumR = 0;   //Reset the LSB
+        color_sensor_info.packetNumL += 1;  //Increment the MSB
+    }
+    else{
+        color_sensor_info.packetNumR += 1;  //Increment the LSB
+        color_sensor_info.packetNumL += 0;  //Leave the MSB alone
+    }
+
+
     ble_advdata_manuf_data_t colorData;
 
     color_data[0] = UVA_COLOR_SERVICE;
@@ -147,7 +160,7 @@ static void advertiseData(){
     // Advertise name and data
     // simple_adv_only_name();
     simple_adv_manuf_data(&colorData);
-    eddystone_with_manuf_adv(COLOR_DATA_URL, &colorData);
+    // eddystone_with_manuf_adv(COLOR_DATA_URL, &colorData);
     led_on(LED);
     nrf_delay_ms(1000);
     led_off(LED);
@@ -255,6 +268,10 @@ int main(void) {
     /* Initialize the LED for the BLE */
     led_init(LED);
     led_off(LED);
+
+    //Reset the packet number for the color sensor data
+    color_sensor_info.packetNumL = 0;
+    color_sensor_info.packetNumR = 0;
 
     // Setup BLE (this also inits the timer AND softdevice libraries)
     led_on(LED);
