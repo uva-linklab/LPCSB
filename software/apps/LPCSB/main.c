@@ -85,7 +85,7 @@ static struct{
 /********** BLE Advertising **********/
 /*************************************/
 #define BLE_ADVERTISING_ENABLED 1
-#define DEVICE_NAME            "LPCSB_1"
+#define DEVICE_NAME            "LPCSB_test"
 #define COLOR_DATA_URL         "j2x.us/LPCSB"
 #define UVA_COMPANY_IDENTIFIER 0x02E0
 #define UVA_COLOR_SERVICE      0x31
