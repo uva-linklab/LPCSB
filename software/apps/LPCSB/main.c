@@ -117,15 +117,10 @@ static void finish_reading_red (int16_t red);
 static void finish_reading_green (int16_t green);
 static void finish_reading_blue (int16_t blue);
 static void advertiseData();
-static void start_color_measuring();
 
 /*************************************/
 /***** Reading and Config Methods ****/
 /*************************************/
-static void start_color_measuring(){
-    tcs34725_read_clear(finish_reading_clear);
-}
-
 static void advertiseData(){
 
     //Increment packet numbers in hex
@@ -291,7 +286,6 @@ int main(void) {
     led_on(LED);
     nrf_delay_ms(1000);
     app_timer_create(&startup_timer, APP_TIMER_MODE_SINGLE_SHOT, start_sensing);
-    app_timer_create(&color_timer, APP_TIMER_MODE_SINGLE_SHOT, start_color_measuring);
     led_off(LED);
     nrf_delay_ms(1000);
 
