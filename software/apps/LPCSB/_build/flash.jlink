@@ -1,5 +1,5 @@
 r
-loadfile _build/LPCSB2_s110.hex 
+loadfile _build/LPCSB_s110.hex 
 r
 g
 exit

@@ -1,0 +1,5 @@
+r
+loadfile _build/LPCSB_Light_ID_s110.hex 
+r
+g
+exit
